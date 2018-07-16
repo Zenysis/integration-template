@@ -1,4 +1,15 @@
 #!/bin/bash -eu
 set -o pipefail
 
-exit 0
+pushd "${PIPELINE_TMP_DIR}" &> /dev/null
+
+count=0
+for data_file in "${PIPELINE_FEED_DIR}"/*.csv ; do
+  "${PIPELINE_BIN_DIR}/process_csv.py" \
+    --input_file="${data_file}" \
+    --output_file="${PIPELINE_TMP_DIR}/processed_data_${count}.json.lz4"
+  count=$((count + 1))
+done
+
+popd &> /dev/null
+
